@@ -1,0 +1,653 @@
+# Copyright 2025 The Newton Developers
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
+
+"""Tests for forward dynamics functions."""
+
+import mujoco
+import numpy as np
+import warp as wp
+from absl.testing import absltest
+from absl.testing import parameterized
+
+import mujoco_warp as mjw
+from mujoco_warp import BiasType
+from mujoco_warp import DisableBit
+from mujoco_warp import EnableBit
+from mujoco_warp import GainType
+from mujoco_warp import IntegratorType
+from mujoco_warp import test_data
+from mujoco_warp._src.types import SPARSE_CONSTRAINT_JACOBIAN
+from mujoco_warp._src.util_pkg import check_version
+
+# tolerance for difference between MuJoCo and mjwarp smooth calculations - mostly
+# due to float precision
+_TOLERANCE = 5e-5
+
+
+def _assert_eq(a, b, name):
+  tol = _TOLERANCE * 10  # avoid test noise
+  err_msg = f"mismatch: {name}"
+  np.testing.assert_allclose(a, b, err_msg=err_msg, atol=tol, rtol=tol)
+
+
+class ForwardTest(parameterized.TestCase):
+  @parameterized.product(xml=["humanoid/humanoid.xml", "pendula.xml"])
+  def test_fwd_velocity(self, xml):
+    _, mjd, m, d = test_data.fixture(xml, qvel_noise=0.01, ctrl_noise=0.1)
+
+    for arr in (d.actuator_velocity, d.qfrc_bias):
+      arr.zero_()
+
+    mjw.fwd_velocity(m, d)
+
+    _assert_eq(d.actuator_velocity.numpy()[0], mjd.actuator_velocity, "actuator_velocity")
+    _assert_eq(d.qfrc_bias.numpy()[0], mjd.qfrc_bias, "qfrc_bias")
+
+  def test_fwd_velocity_tendon(self):
+    _, mjd, m, d = test_data.fixture("tendon/fixed.xml")
+
+    d.ten_velocity.zero_()
+    mjw.fwd_velocity(m, d)
+
+    _assert_eq(d.ten_velocity.numpy()[0], mjd.ten_velocity, "ten_velocity")
+
+  @parameterized.product(
+    xml=("actuation/actuation.xml", "actuation/actuators.xml", "actuation/muscle.xml"),
+    disableflags=(0, DisableBit.ACTUATION),
+  )
+  def test_actuation(self, xml, disableflags):
+    mjm, mjd, m, d = test_data.fixture(xml, keyframe=0, overrides={"opt.disableflags": disableflags})
+
+    for arr in (d.qfrc_actuator, d.actuator_force, d.act_dot):
+      arr.zero_()
+
+    mjw.fwd_actuation(m, d)
+
+    _assert_eq(d.qfrc_actuator.numpy()[0], mjd.qfrc_actuator, "qfrc_actuator")
+    _assert_eq(d.actuator_force.numpy()[0], mjd.actuator_force, "actuator_force")
+
+    if mjm.na:
+      _assert_eq(d.act_dot.numpy()[0], mjd.act_dot, "act_dot")
+
+      # next activations
+      mujoco.mj_step(mjm, mjd)
+      mjw.step(m, d)
+
+      _assert_eq(d.act.numpy()[0], mjd.act, "act")
+
+    # TODO(team): test actearly
+
+  @parameterized.parameters(0, DisableBit.CLAMPCTRL)
+  def test_clampctrl(self, disableflags):
+    _, mjd, _, d = test_data.fixture(
+      xml="""
+    <mujoco>
+      <worldbody>
+        <body>
+          <joint name="joint" type="slide"/>
+          <geom type="sphere" size=".1"/>
+        </body>
+      </worldbody>
+      <actuator>
+        <motor joint="joint" ctrlrange="-1 1"/>
+      </actuator>
+      <keyframe>
+        <key ctrl="2"/>
+      </keyframe>
+    </mujoco>
+    """,
+      keyframe=0,
+      overrides={"opt.disableflags": disableflags},
+    )
+
+    _assert_eq(d.ctrl.numpy()[0], mjd.ctrl, "ctrl")
+
+  def test_fwd_acceleration(self):
+    _, mjd, m, d = test_data.fixture("humanoid/humanoid.xml", qvel_noise=0.01, ctrl_noise=0.1)
+
+    for arr in (d.qfrc_smooth, d.qacc_smooth):
+      arr.zero_()
+
+    mjw.fwd_acceleration(m, d)
+
+    _assert_eq(d.qfrc_smooth.numpy()[0], mjd.qfrc_smooth, "qfrc_smooth")
+    _assert_eq(d.qacc_smooth.numpy()[0], mjd.qacc_smooth, "qacc_smooth")
+
+  @parameterized.product(
+    jacobian=(mujoco.mjtJacobian.mjJAC_AUTO, mujoco.mjtJacobian.mjJAC_DENSE), disableflags=(0, DisableBit.EULERDAMP)
+  )
+  def test_euler(self, jacobian, disableflags):
+    mjm, mjd, _, _ = test_data.fixture(
+      "pendula.xml",
+      qvel_noise=0.01,
+      ctrl_noise=0.1,
+      overrides={"opt.jacobian": jacobian, "opt.disableflags": DisableBit.CONTACT | disableflags},
+    )
+    self.assertTrue((mjm.dof_damping > 0).any())
+
+    m = mjw.put_model(mjm)
+    d = mjw.put_data(mjm, mjd)
+    mujoco.mj_forward(mjm, mjd)
+    mujoco.mj_Euler(mjm, mjd)
+    mjw.solve(m, d)  # compute efc.Ma
+    mjw.euler(m, d)
+
+    _assert_eq(d.qpos.numpy()[0], mjd.qpos, "qpos")
+    _assert_eq(d.qvel.numpy()[0], mjd.qvel, "qvel")
+    _assert_eq(d.act.numpy()[0], mjd.act, "act")
+
+  def test_rungekutta4(self):
+    mjm, mjd, m, d = test_data.fixture(
+      xml="""
+        <mujoco>
+          <option integrator="RK4" iterations="1" ls_iterations="1">
+            <flag constraint="disable"/>
+          </option>
+          <worldbody>
+            <body>
+              <joint type="hinge"/>
+              <geom type="sphere" size=".1"/>
+              <body pos="0.1 0 0">
+                <joint type="hinge"/>
+                <geom type="sphere" size=".1"/>
+              </body>
+            </body>
+          </worldbody>
+          <keyframe>
+            <key qpos=".1 .2" qvel=".025 .05"/>
+          </keyframe>
+        </mujoco>
+        """,
+      keyframe=0,
+    )
+
+    mjw.rungekutta4(m, d)
+    mujoco.mj_RungeKutta(mjm, mjd, 4)
+
+    _assert_eq(d.qpos.numpy()[0], mjd.qpos, "qpos")
+    _assert_eq(d.qvel.numpy()[0], mjd.qvel, "qvel")
+    _assert_eq(d.time.numpy()[0], mjd.time, "time")
+    _assert_eq(d.xpos.numpy()[0], mjd.xpos, "xpos")
+
+    # test rungekutta determinism
+    def rk_step() -> wp.array(dtype=wp.float32, ndim=2):
+      d.qpos = wp.ones_like(d.qpos)
+      d.qvel = wp.ones_like(d.qvel)
+      d.act = wp.ones_like(d.act)
+      mjw.rungekutta4(m, d)
+      return d.qpos
+
+    _assert_eq(rk_step().numpy()[0], rk_step().numpy()[0], "qpos")
+
+  @parameterized.product(
+    jacobian=(mujoco.mjtJacobian.mjJAC_SPARSE, mujoco.mjtJacobian.mjJAC_DENSE),
+    actuation=(0, DisableBit.ACTUATION),
+    spring=(0, DisableBit.SPRING),
+    damper=(0, DisableBit.DAMPER),
+  )
+  def test_implicit(self, jacobian, actuation, spring, damper):
+    mjm, mjd, _, _ = test_data.fixture(
+      "pendula.xml",
+      overrides={
+        "opt.jacobian": jacobian,
+        "opt.disableflags": DisableBit.CONTACT | actuation | spring | damper,
+        "opt.integrator": IntegratorType.IMPLICITFAST,
+      },
+    )
+
+    mjm.actuator_gainprm[:, 2] = np.random.uniform(low=0.01, high=10.0, size=mjm.actuator_gainprm[:, 2].shape)
+
+    # change actuators to velocity/damper to cover all codepaths
+    mjm.actuator_gaintype[3] = GainType.AFFINE
+    mjm.actuator_gaintype[6] = GainType.AFFINE
+    mjm.actuator_biastype[0:3] = BiasType.AFFINE
+    mjm.actuator_biastype[4:6] = BiasType.AFFINE
+    mjm.actuator_biasprm[0:3, 2] = -1.0
+    mjm.actuator_biasprm[4:6, 2] = -1.0
+    mjm.actuator_ctrlrange[3:7] = 10.0
+    mjm.actuator_gear[:] = 1.0
+
+    mjd.qvel = np.random.uniform(low=-0.01, high=0.01, size=mjd.qvel.shape)
+    mjd.ctrl = np.random.uniform(low=-0.1, high=0.1, size=mjd.ctrl.shape)
+    mjd.act = np.random.uniform(low=-0.1, high=0.1, size=mjd.act.shape)
+    mujoco.mj_forward(mjm, mjd)
+
+    m = mjw.put_model(mjm)
+    d = mjw.put_data(mjm, mjd)
+    # compute efc.Ma - used by mjw.implicit
+    d.efc.Ma = wp.array(mjd.qfrc_constraint + mjd.qfrc_smooth, dtype=wp.float32, shape=(1, -1))
+
+    mujoco.mj_implicit(mjm, mjd)
+    mjw.implicit(m, d)
+
+    _assert_eq(d.qpos.numpy()[0], mjd.qpos, "qpos")
+    _assert_eq(d.act.numpy()[0], mjd.act, "act")
+
+  def test_implicit_position(self):
+    mjm, mjd, m, d = test_data.fixture(
+      "actuation/position.xml",
+      keyframe=0,
+      qvel_noise=0.01,
+      ctrl_noise=0.1,
+      overrides={"opt.integrator": IntegratorType.IMPLICITFAST},
+    )
+
+    mujoco.mj_implicit(mjm, mjd)
+
+    mjw.solve(m, d)  # compute efc.Ma
+    mjw.implicit(m, d)
+
+    _assert_eq(d.qpos.numpy()[0], mjd.qpos, "qpos")
+    _assert_eq(d.qvel.numpy()[0], mjd.qvel, "qvel")
+
+  def test_implicit_tendon_damping(self):
+    mjm, mjd, m, d = test_data.fixture(
+      "tendon/damping.xml",
+      keyframe=0,
+      qvel_noise=0.01,
+      ctrl_noise=0.1,
+      overrides={"opt.integrator": IntegratorType.IMPLICITFAST},
+    )
+
+    mujoco.mj_implicit(mjm, mjd)
+
+    mjw.solve(m, d)  # compute efc.Ma
+    mjw.implicit(m, d)
+
+    _assert_eq(d.qpos.numpy()[0], mjd.qpos, "qpos")
+    _assert_eq(d.qvel.numpy()[0], mjd.qvel, "qvel")
+
+  @absltest.skipIf(not wp.get_device().is_cuda, "Skipping test that requires GPU.")
+  @parameterized.product(
+    xml=("humanoid/humanoid.xml", "pendula.xml", "constraints.xml", "collision.xml"), graph_conditional=(True, False)
+  )
+  def test_graph_capture(self, xml, graph_conditional):
+    # TODO(team): test more environments
+    _, _, m, d = test_data.fixture(xml, overrides={"opt.graph_conditional": graph_conditional})
+
+    with wp.ScopedCapture() as capture:
+      mjw.step(m, d)
+
+    # step a few times to ensure no errors at the step boundary
+    wp.capture_launch(capture.graph)
+    wp.capture_launch(capture.graph)
+    wp.capture_launch(capture.graph)
+
+    self.assertTrue(d.time.numpy()[0] > 0.0)
+
+  def test_forward_energy(self):
+    _, mjd, _, d = test_data.fixture(
+      "humanoid/humanoid.xml", qvel_noise=0.01, ctrl_noise=0.1, overrides={"opt.enableflags": EnableBit.ENERGY}
+    )
+
+    _assert_eq(d.energy.numpy()[0][0], mjd.energy[0], "potential energy")
+    _assert_eq(d.energy.numpy()[0][1], mjd.energy[1], "kinetic energy")
+
+  def test_tendon_actuator_force_limits(self):
+    for keyframe in range(7):
+      _, mjd, m, d = test_data.fixture("actuation/tendon_force_limit.xml", keyframe=keyframe)
+
+      d.actuator_force.zero_()
+
+      mjw.forward(m, d)
+
+      _assert_eq(d.actuator_force.numpy()[0], mjd.actuator_force, "actuator_force")
+
+  @parameterized.product(xml=("humanoid/humanoid.xml",), energy=(0, EnableBit.ENERGY))
+  def test_step1(self, xml, energy):
+    # TODO(team): test more mjcfs
+    mjm, mjd, m, d = test_data.fixture(
+      xml, qpos_noise=0.1, qvel_noise=0.01, ctrl_noise=0.1, overrides={"opt.enableflags": energy}
+    )
+
+    # some of the fields updated by step1
+    step1_field = [
+      "xpos",
+      "xquat",
+      "xmat",
+      "xipos",
+      "ximat",
+      "xanchor",
+      "xaxis",
+      "geom_xpos",
+      "geom_xmat",
+      "site_xmat",
+      "subtree_com",
+      "cinert",
+      "cdof",
+      "cam_xpos",
+      "cam_xmat",
+      "light_xpos",
+      "light_xdir",
+      "ten_length",
+      "ten_J",
+      "ten_wrapadr",
+      "ten_wrapnum",
+      "wrap_obj",
+      "wrap_xpos",
+      "qM",
+      "qLD",
+      "nefc",
+      "efc_type",
+      "efc_id",
+      "efc_J",
+      "efc_pos",
+      "efc_margin",
+      "efc_D",
+      "efc_vel",
+      "efc_aref",
+      "efc_frictionloss",
+      "actuator_length",
+      "actuator_moment",
+      "actuator_velocity",
+      "ten_velocity",
+      "cvel",
+      "cdof_dot",
+      "qfrc_spring",
+      "qfrc_damper",
+      "qfrc_gravcomp",
+      "qfrc_fluid",
+      "qfrc_passive",
+      "qfrc_bias",
+      "energy",
+    ]
+    if m.nflexvert:
+      step1_field += ["flexvert_xpos"]
+    if m.nflexedge:
+      step1_field += ["flexedge_length", "flexedge_velocity"]
+
+    def _getattr(arr):
+      if (len(arr) >= 4) & (arr[:4] == "efc_"):
+        return getattr(d.efc, arr[4:]), True
+      return getattr(d, arr), False
+
+    for arr in step1_field:
+      if arr in ("geom_xpos", "geom_xmat"):
+        # leave geom_xpos and geom_xmat untouched because they have static data
+        continue
+      attr, _ = _getattr(arr)
+      if arr in ("xquat", "xmat", "ximat"):
+        # xquat, xmat, ximat need to retain identity for world body
+        attr = attr[:, 1:]
+      if attr.dtype == float:
+        attr.fill_(wp.nan)
+      elif attr.dtype == int:
+        attr.fill_(-1)
+      else:
+        attr.zero_()
+
+    mujoco.mj_step1(mjm, mjd)
+    mjw.step1(m, d)
+
+    # Precompute sorting for efc fields to avoid non determinism
+    nefc = d.nefc.numpy()[0]
+    if nefc > 0:
+      nv = m.nv
+      if SPARSE_CONSTRAINT_JACOBIAN:
+        # Reconstruct dense J from sparse representation
+        d_efc_J = np.zeros((nefc, nv))
+        mujoco.mju_sparse2dense(
+          d_efc_J,
+          d.efc.J.numpy()[0, 0],
+          d.efc.J_rownnz.numpy()[0, :nefc],
+          d.efc.J_rowadr.numpy()[0, :nefc],
+          d.efc.J_colind.numpy()[0, 0],
+        )
+      else:
+        d_efc_J = d.efc.J.numpy()[0, :nefc, :nv]
+      if mjd.efc_J.shape[0] != mjd.nefc * mjm.nv:
+        mjd_efc_J = np.zeros((mjd.nefc, mjm.nv))
+        mujoco.mju_sparse2dense(mjd_efc_J, mjd.efc_J, mjd.efc_J_rownnz, mjd.efc_J_rowadr, mjd.efc_J_colind)
+      else:
+        mjd_efc_J = mjd.efc_J.reshape((mjd.nefc, mjm.nv))
+
+      # Sort by efc_type, then efc_J columns (tiebreaker)
+      d_sort = np.lexsort((*d_efc_J.T, d.efc.type.numpy()[0, :nefc]))
+      mjd_sort = np.lexsort((*mjd_efc_J.T, mjd.efc_type[:nefc]))
+      _assert_eq(d_efc_J[d_sort].reshape(-1), mjd_efc_J[mjd_sort].reshape(-1), "efc_J")
+
+      # Check efc_id here as a contact may have a different id
+      _assert_eq(sorted(d.efc.id.numpy()[0, :nefc]), sorted(mjd.efc_id[:nefc]), "efc_id")
+
+    for arr in step1_field:
+      d_arr, is_efc = _getattr(arr)
+
+      d_arr = d_arr.numpy()[0]
+      mjd_arr = getattr(mjd, arr)
+      if arr in ["xmat", "ximat", "geom_xmat", "site_xmat", "cam_xmat"]:
+        mjd_arr = mjd_arr.reshape(-1)
+        d_arr = d_arr.reshape(-1)
+      elif arr == "qM":
+        qM = np.zeros((mjm.nv, mjm.nv))
+        mujoco.mj_fullM(mjm, qM, mjd.qM)
+        mjd_arr = qM
+        d_arr = d_arr[: mjm.nv, : mjm.nv]
+      elif arr == "actuator_moment":
+        actuator_moment = np.zeros((mjm.nu, mjm.nv))
+        mujoco.mju_sparse2dense(actuator_moment, mjd.actuator_moment, mjd.moment_rownnz, mjd.moment_rowadr, mjd.moment_colind)
+        mjd_arr = actuator_moment
+        d_arr = np.zeros((mjm.nu, mjm.nv))
+        mujoco.mju_sparse2dense(
+          d_arr,
+          d.actuator_moment.numpy()[0],
+          d.moment_rownnz.numpy()[0],
+          d.moment_rowadr.numpy()[0],
+          d.moment_colind.numpy()[0],
+        )
+      elif arr == "ten_J":
+        if check_version("mujoco>=3.5.1.dev872479828"):
+          ten_J = np.zeros((mjm.ntendon, mjm.nv))
+          if mjm.ntendon:
+            if check_version("mujoco>=3.5.1.dev875093374"):
+              mujoco.mju_sparse2dense(ten_J, mjd.ten_J, mjm.ten_J_rownnz, mjm.ten_J_rowadr, mjm.ten_J_colind)
+            else:
+              mujoco.mju_sparse2dense(ten_J, mjd.ten_J, mjd.ten_J_rownnz, mjd.ten_J_rowadr, mjd.ten_J_colind)
+          mjd_arr = ten_J
+        else:
+          mjd_arr = mjd.ten_J.reshape((mjm.ntendon, mjm.nv))
+      elif arr == "efc_J" or arr == "efc_id":
+        # Already checked earlier
+        continue
+      elif arr == "qLD":
+        vec = np.ones((1, mjm.nv))
+        res = np.zeros((1, mjm.nv))
+        mujoco.mj_solveM(mjm, mjd, res, vec)
+
+        vec_wp = wp.array(vec, dtype=float)
+        res_wp = wp.zeros((1, mjm.nv), dtype=float)
+        mjw.solve_m(m, d, res_wp, vec_wp)
+
+        d_arr = res_wp.numpy()[0]
+        mjd_arr = res[0]
+
+      if is_efc:
+        nefc = d.nefc.numpy()[0]
+        nv = m.nv
+        d_arr = d_arr[:nefc]
+        d_arr = d_arr[d_sort].reshape(-1)
+        mjd_arr = mjd_arr[mjd_sort].reshape(-1)
+
+      _assert_eq(d_arr, mjd_arr, arr)
+
+    # TODO(team): sensor_pos
+    # TODO(team): sensor_vel
+
+  @parameterized.product(
+    xml=("humanoid/humanoid.xml",),
+    integrator=(IntegratorType.EULER, IntegratorType.IMPLICITFAST, IntegratorType.RK4),
+  )
+  def test_step2(self, xml, integrator):
+    mjm, mjd, m, _ = test_data.fixture(xml, qvel_noise=0.01, ctrl_noise=0.1, overrides={"opt.integrator": integrator})
+
+    # some of the fields updated by step2
+    step2_field = [
+      "act_dot",
+      "actuator_force",
+      "qfrc_actuator",
+      "qfrc_smooth",
+      "qacc",
+      "qacc_warmstart",
+      "qvel",
+      "qpos",
+      "efc_force",
+      "qfrc_constraint",
+    ]
+
+    def _getattr(arr):
+      if (len(arr) >= 4) & (arr[:4] == "efc_"):
+        return getattr(d.efc, arr[4:]), True
+      return getattr(d, arr), False
+
+    mujoco.mj_step1(mjm, mjd)
+
+    # input
+    ctrl = 0.1 * np.random.rand(mjm.nu)
+    qfrc_applied = 0.1 * np.random.rand(mjm.nv)
+    xfrc_applied = 0.1 * np.random.rand(mjm.nbody, 6)
+
+    mjd.ctrl = ctrl
+    mjd.qfrc_applied = qfrc_applied
+    mjd.xfrc_applied = xfrc_applied
+
+    d = mjw.put_data(mjm, mjd)
+
+    for arr in step2_field:
+      if arr in ["qpos", "qvel"]:
+        continue
+      attr, _ = _getattr(arr)
+      if attr.dtype == float:
+        attr.fill_(wp.nan)
+      elif attr.dtype == int:
+        attr.fill_(-1)
+      else:
+        attr.zero_()
+
+    mujoco.mj_step2(mjm, mjd)
+    mjw.step2(m, d)
+
+    for arr in step2_field:
+      d_arr, is_efc = _getattr(arr)
+      d_arr = d_arr.numpy()[0]
+      if is_efc:
+        d_arr = d_arr[: d.nefc.numpy()[0]]
+      _assert_eq(d_arr, getattr(mjd, arr), arr)
+
+  def test_step_no_dofs(self):
+    """Tests step with no degrees of freedom."""
+    _, _, m, d = test_data.fixture(
+      xml="""
+    <mujoco>
+      <body>
+        <geom type="sphere" size="1"/>
+      </body>
+    </mujoco>
+    """
+    )
+    mjw.step(m, d)
+    self.assertGreater(d.time.numpy()[0], 0.0)
+
+  def test_control_callback(self):
+    """Tests control_callback is called during forward and skipped when actuation disabled."""
+    xml = """
+    <mujoco>
+      <worldbody>
+        <body>
+          <geom size="1"/>
+          <joint name="hinge"/>
+        </body>
+      </worldbody>
+      <actuator>
+        <motor joint="hinge"/>
+      </actuator>
+    </mujoco>
+    """
+
+    @wp.kernel
+    def _set_ctrl(ctrl_out: wp.array2d(dtype=float)):
+      worldid = wp.tid()
+      ctrl_out[worldid, 0] = 2.0
+
+    def my_control(m, d):
+      wp.launch(_set_ctrl, dim=(d.nworld,), outputs=[d.ctrl])
+
+    _, _, m, d = test_data.fixture(xml=xml)
+    m.callback.control = my_control
+    mjw.forward(m, d)
+    self.assertEqual(d.ctrl.numpy()[0, 0], 2.0)
+
+    # reset ctrl, disable actuation, verify callback not called
+    d.ctrl.zero_()
+    m.opt.disableflags |= DisableBit.ACTUATION
+    mjw.forward(m, d)
+    self.assertEqual(d.ctrl.numpy()[0, 0], 0.0)
+
+  @parameterized.product(
+    frequency=(1.5, 0.5),
+    timestamp=(0.2, 0.4),
+  )
+  def test_act_dyn_callback(self, frequency, timestamp):
+    """Tests act_dyn_callback with a harmonic oscillator."""
+
+    @wp.kernel
+    def _oscillator_act_dot(
+      act_in: wp.array2d(dtype=float),
+      ctrl_in: wp.array2d(dtype=float),
+      act_dot_out: wp.array2d(dtype=float),
+    ):
+      worldid = wp.tid()
+      frequency = wp.static(2.0 * wp.pi) * ctrl_in[worldid, 0]
+      act_dot_out[worldid, 0] = -act_in[worldid, 1] * frequency
+      act_dot_out[worldid, 1] = act_in[worldid, 0] * frequency
+
+    def oscillator(m, d):
+      wp.launch(
+        _oscillator_act_dot,
+        dim=(d.nworld,),
+        inputs=[d.act, d.ctrl],
+        outputs=[d.act_dot],
+      )
+
+    xml = f"""
+    <mujoco>
+      <option timestep="1e-4"/>
+      <worldbody>
+        <body>
+          <geom size="1"/>
+          <joint name="hinge"/>
+        </body>
+      </worldbody>
+      <actuator>
+        <general joint="hinge" dyntype="user" actdim="2"/>
+      </actuator>
+      <keyframe>
+        <key time="{timestamp}" ctrl="{frequency}" act="{np.cos(2 * np.pi * frequency * timestamp)} {np.sin(2 * np.pi * frequency * timestamp)}"/>
+      </keyframe>
+    </mujoco>
+    """
+
+    mjm, _, m, d = test_data.fixture(xml=xml, keyframe=0)
+    m.callback.act_dyn = oscillator
+
+    mjw.step(m, d)
+
+    # verify act after one step matches analytical solution at t + dt
+    t_next = timestamp + mjm.opt.timestep
+    np.testing.assert_allclose(d.act.numpy()[0, 0], np.cos(2 * np.pi * frequency * t_next), atol=1e-3)
+    np.testing.assert_allclose(d.act.numpy()[0, 1], np.sin(2 * np.pi * frequency * t_next), atol=1e-3)
+
+
+if __name__ == "__main__":
+  wp.init()
+  absltest.main()

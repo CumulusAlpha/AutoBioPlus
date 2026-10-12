@@ -1,0 +1,46 @@
+<mujoco model="unnamed">
+  <compiler angle="radian" meshdir="../../meshes/instrument/bunsen"/>
+
+  <default>
+    <default class="visual">
+      <geom group="2" contype="0" conaffinity="0"/>
+    </default>
+    <default class="collision">
+      <geom group="3" contype="1" conaffinity="1" condim="4" friction="2.0 0.02 0.001" solref="0.004 1" solimp="0.95 0.99 0.001" priority="1"/>
+    </default>
+  </default>
+
+  <asset>
+    <mesh name="Cylinder.003_visual_mesh" file="Cylinder.005.stl" scale="0.01294768 0.01294768 0.01294768"/>
+    <mesh name="Cylinder.002_visual_mesh" file="Cylinder.002.stl" scale="0.010719384 0.010719384 0.021585595"/>
+    <mesh name="Cylinder.004_visual_mesh" file="Cylinder.010.stl" scale="0.005767156 0.005767156 0.013381039"/>
+  </asset>
+
+  <worldbody>
+    <body name="Cylinder.003_link">
+      <inertial pos="0 0 0.05179072" mass="0.08" diaginertia="0.0000738 0.0000738 0.0000046"/>
+      <geom name="Cylinder.003_visual" class="visual" type="mesh" mesh="Cylinder.003_visual_mesh" rgba="0.8 0.8 0.8 1"/>
+      <geom name="Cylinder.003_collision" class="collision" type="cylinder" size="0.010719125 0.05179072" pos="0 0 0.103581441"/>
+
+      <body name="Cylinder.002_link" pos="0 0 0.03604168">
+        <inertial pos="0 0 0" mass="0.02" diaginertia="0.0000037 0.0000037 0.0000011"/>
+        <joint name="Cylinder.002_link_joint" pos="0 0 0" axis="0 0 1" range="-3.14 3.14" damping="0.001"/>
+        <geom name="Cylinder.002_visual" class="visual" type="mesh" mesh="Cylinder.002_visual_mesh" rgba="1 1 1 1"/>
+        <geom name="Cylinder.002_collision" class="collision" type="box" size="0.010719125 0.010719125 0.021585725" pos="0 3.884304e-07 0"/>
+      </body>
+
+      <body name="Cylinder.004_link" pos="0.033980539 0 -0.003359146" quat="0.707105 0 0.707108 0">
+        <inertial pos="0 0 0.00755277" quat="0.5 0.5 0.5 0.5" mass="0.02" diaginertia="0.00000236 0.00000236 0.00000043"/>
+        <joint name="Cylinder.004_link_joint" pos="0 0 0" axis="0 0 1" range="-3.14 3.14"  damping="0.001"/>
+        <geom name="Cylinder.004_visual" class="visual" type="mesh" mesh="Cylinder.004_visual_mesh" rgba="0.72941 0.61569 0.31373 1"/>
+        <geom name="Cylinder.004_collision" class="collision" type="box" size="0.005 0.005 0.024" pos="0 5.179072e-07 0.012392095"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <contact>
+    <exclude body1="Cylinder.003_link" body2="Cylinder.002_link"/>
+    <exclude body1="Cylinder.003_link" body2="Cylinder.004_link"/>
+    <exclude body1="Cylinder.002_link" body2="Cylinder.004_link"/>
+  </contact>
+</mujoco>

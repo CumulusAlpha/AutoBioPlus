@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src", "src.compat*", "src.policies*", "src.tasks*", "src.utils*", "assets", "assets.mjcf*", "scripts", "scripts.*"]
+
+[tool.setuptools.package-data]
+src = ["libablab.so.*"]
+assets = ["meshes/**/*", "mjcf/**/*.xml"]
+
+[project]
+name = "dexbiolab"
+version = "0.1.0"
+description = "Benchmarking dexterous manipulation with dynamic experimental phenomena in realistic laboratories"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "chex>=0.1.91",
+    "cuda-toolkit[nvcc,nvrtc]==12.8.*",
+    "icecream>=2.1.10",
+    "lerobot==0.4.4",
+    "mjlab>=1.2.0",
+    "msgpack==1.1.0",
+    "mugs",
+    "mujoco==3.6.0",
+    "mujoco-warp",
+    "nanobind>=2.11.0",
+    "opencv-python>=4.13.0.92",
+    "pdbpp>=0.12.0.post1",
+    "pyarrow>=19.0.0",
+    "scikit-build-core>=0.11.6",
+    "termcolor>=3.3.0",
+    "trimesh>=4.11.2",
+    "zarr>=3.1.6",
+]
+
+[tool.uv.workspace]
+members = [
+    "thirdparty/MuGS",
+]
+
+[[tool.uv.index]]
+url = "https://pypi.nvidia.com/"
+
+[tool.uv]
+index-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+
+[[tool.uv.index]]
+url = "https://pypi.org/simple"
+default = true
+
+[tool.uv.sources]
+mujoco-warp = { path = "thirdparty/mujoco_warp", editable = true }
+mugs = { workspace = true, editable = true }
+
+[tool.ruff.lint.isort]
+combine-as-imports = true

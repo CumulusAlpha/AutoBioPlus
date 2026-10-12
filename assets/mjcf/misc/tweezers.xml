@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="tweezers">
+  <compiler angle="radian" meshdir="../../meshes" />
+
+  <default>
+    <geom density="200" friction="1.0 0.005 0.0001" contype="1" conaffinity="1" />
+  </default>
+
+  <asset>
+    <mesh name="leg_mirror_mesh" file="misc/tweezers/leg_mirror.stl" scale="0.001 0.001 0.001" />
+    <mesh name="leg_mesh" file="misc/tweezers/leg.stl" scale="0.001 0.001 0.001" />
+  </asset>
+
+  <worldbody>
+    <body name="tweezers">
+      <site
+        name="tweezers_site"
+        pos="-0.14245074 0.00712848 -0.00978547"
+        type="sphere"
+        size="0.003"
+        rgba="1 0 0 1"
+        group="3"
+      />
+      <geom
+        name="tweezers_lower_arm_visual"
+        type="mesh"
+        mesh="leg_mirror_mesh"
+        group="2"
+        contype="0"
+        conaffinity="0"
+        rgba="0.75 0.75 0.72 1"
+      />
+      <geom
+        name="tweezers_lower_arm_collision"
+        type="mesh"
+        mesh="leg_mirror_mesh"
+        group="3"
+        rgba="0.75 0.75 0.72 0"
+      />
+
+      <body name="tweezers_upper_arm" pos="0 0 0">
+        <joint
+          name="tweezers_hinge"
+          type="hinge"
+          axis="0 0 1"
+          range="-0.55 0.109"
+          stiffness="0.5"
+          damping="0.1"
+          springref="-0.1"
+          frictionloss="0.0001"
+        />
+        <geom
+          name="tweezers_upper_arm_visual"
+          type="mesh"
+          mesh="leg_mesh"
+          group="2"
+          contype="0"
+          conaffinity="0"
+          rgba="0.82 0.82 0.78 1"
+        />
+      <geom
+        name="tweezers_upper_arm_collision"
+        type="mesh"
+        mesh="leg_mesh"
+        group="3"
+        rgba="0.82 0.82 0.78 0"
+      />
+      </body>
+    </body>
+  </worldbody>
+
+  <contact>
+    <exclude body1="tweezers" body2="tweezers_upper_arm" />
+  </contact>
+</mujoco>

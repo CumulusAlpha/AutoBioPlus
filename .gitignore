@@ -1,0 +1,86 @@
+.venv/
+.env
+.server_runtime
+dexbiolab/
+reference/
+src/dexbiolab.egg-info
+DexBioLab-main/
+other_libraries/
+.vscode
+# =========================
+# 2️⃣ Basic Python ignore rules
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+MUJOCO_LOG.TXT
+# C extensions
+*.so
+# =========================
+# 3️⃣ Virtual environments
+# =========================
+venv/
+env/
+ENV/
+
+# =========================
+# 4️⃣ Logs & training output
+# =========================
+logs/
+log/
+*.log
+tensorboard/
+tb_logs/
+runs/
+wandb/
+# =========================
+# 5️⃣ Common reinforcement learning / simulation output
+# =========================
+checkpoints/
+ckpt/
+models/
+saved_models/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# =========================
+# 6️⃣ Data files (large files)
+# =========================
+data/
+datasets/
+*.zarr
+*.hdf5
+*.h5
+*.npz
+*.npy
+*.pkl
+*.zip
+assets/meshes/scenes/*.ply
+assets/scenes/*.ply
+# =========================
+# 7️⃣ Jupyter
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# 9️⃣ Mac / Linux
+# =========================
+.DS_Store
+*.swp
+*.swo
+
+# =========================
+# 🔟 Cache files
+# =========================
+.cache/
+pytest_cache/
+.mypy_cache/
+.pytest_cache/
+ruff_cache/
+.ruff_cache/
+.vscode/
+video/
+video1/

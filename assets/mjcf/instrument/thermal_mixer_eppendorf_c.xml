@@ -1,0 +1,222 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="thermal_mixer_eppendorf_c">
+  <compiler angle="radian" autolimits="true" assetdir="../../meshes" />
+  <default>
+    <default class="visual">
+      <geom type="mesh" contype="0" conaffinity="0" density="0" group="2" />
+      <mesh inertia="shell" />
+    </default>
+    <default class="inertia">
+      <geom type="mesh" contype="0" conaffinity="0" group="5" />
+      <mesh inertia="exact" />
+    </default>
+    <default class="collision">
+      <geom type="mesh" contype="0" conaffinity="1" density="0" group="3" />
+    </default>
+  </default>
+  <option gravity="0 0 0" />
+  <asset>
+    <mesh class="visual" name="body-visual-0" file="instrument/thermal_mixer_eppendorf_c/body-visual-0.obj" />
+    <material name="body-0" rgba="0 0.431373 0.968627 1" metallic="0.0" roughness="1.0" />
+    <mesh class="visual" name="body-visual-1" file="instrument/thermal_mixer_eppendorf_c/body-visual-1.obj" />
+    <texture name="body-0" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-0.png" />
+    <material name="body-1" rgba="1 1 1 1" metallic="0.0" roughness="1.0" texture="body-0" />
+    <mesh class="visual" name="body-visual-2" file="instrument/thermal_mixer_eppendorf_c/body-visual-2.obj" />
+    <material name="body-2" rgba="0.647059 0.619608 0.6 1" metallic="0.0" roughness="1.0" />
+    <mesh class="visual" name="body-visual-3" file="instrument/thermal_mixer_eppendorf_c/body-visual-3.obj" />
+    <material name="body-3" rgba="0.69019608 0.67058824 0.58431373 1" metallic="0.0" roughness="1.0" />
+    <mesh class="visual" name="body-visual-4" file="instrument/thermal_mixer_eppendorf_c/body-visual-4.obj" />
+    <material name="body-4" rgba="0.85098 0.85098 0.85098 1" metallic="0.0" roughness="1.0" />
+    <mesh class="inertia" name="body-inertia" file="instrument/thermal_mixer_eppendorf_c/body-inertia.obj" />
+
+    <texture name="body-display" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-1" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-2" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-3" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-4" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-5" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-6" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-7" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-8" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-9" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-10" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-11" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-12" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-13" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-14" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-15" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-16" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-17" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-18" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-19" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-20" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-21" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-22" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-23" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-24" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-25" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-26" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-27" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-28" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-29" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-30" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-31" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-32" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-33" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-34" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-35" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-36" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-37" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-38" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-39" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-40" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-41" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-42" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-43" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-44" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-45" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-46" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-47" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-48" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-49" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-50" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-51" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-52" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-53" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-54" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-55" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-56" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-57" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-58" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-59" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-60" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-61" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-62" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-63" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-64" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-65" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-66" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-67" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-68" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-69" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-70" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-71" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-72" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-73" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-74" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-75" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-76" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-77" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-78" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-79" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-80" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-81" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-82" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-83" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-84" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-85" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-86" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-87" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-88" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-89" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-90" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-91" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-92" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-93" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-94" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-95" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-96" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-97" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-98" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-99" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-100" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-101" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-102" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-103" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-104" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-105" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-106" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-107" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-108" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-109" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-110" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-111" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-112" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-113" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-114" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-115" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-116" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-117" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-118" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-119" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-120" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-121" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-122" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-123" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-124" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-125" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-126" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <texture name="body-display-env-127" type="2d" file="instrument/thermal_mixer_eppendorf_c/body-display-placeholder.png" />
+    <material name="body-display" rgba="1 1 1 1" metallic="0.0" roughness="1.0" texture="body-display" emission="0.5" />
+    <mesh class="visual" name="body-display-visual" file="instrument/thermal_mixer_eppendorf_c/body-display-visual.obj" />
+  </asset>
+  <worldbody>
+    <frame pos="0 -0 0.09249817">
+      <body name="body" pos="0 0 0" quat="0.5 0.5 0.5 0.5">
+        <geom class="visual" mesh="body-visual-0" material="body-0" />
+        <geom class="visual" mesh="body-visual-1" material="body-1" />
+        <geom class="visual" mesh="body-visual-2" material="body-2" />
+        <geom class="visual" mesh="body-visual-3" material="body-3" />
+        <geom class="visual" mesh="body-visual-4" material="body-4" />
+        <geom class="inertia" mesh="body-inertia" density="1000" />
+        <geom class="collision" type="box" size="0.15033577 0.10072497 0.02991682" pos="0.00186334 -0.06069169 -0.00926348" quat="0.70710681 -0.70710675 0 0" />
+        <geom class="collision" type="box" size="0.12129409 0.10188704 0.02098387" pos="0.02965375 -0.00846489 -0.00922712" quat="0.70710681 -0.70710675 0 0" />
+        <geom class="collision" type="box" size="0.06161729 0.10025134 0.01065979" pos="-0.09332679 -0.00207629 -0.00967234" quat="0.6676502 -0.66765015 -0.23290179 0.23290177" />
+        <geom class="collision" type="box" size="0.10204284 0.00683687 0.01765341" pos="0.04575302 0.01185085 0.08553979" quat="0.70408505 -0.704085 0.0653014 -0.0653014" />
+        <geom class="collision" type="box" size="0.10204284 0.00683687 0.01765341" pos="0.04575302 0.01185087 -0.10279456" quat="0.70408505 -0.704085 0.0653014 -0.0653014" />
+        <geom class="collision" type="box" size="0.05654196 0.07333491 0.02222099" pos="0.01767512 0.03368212 -0.00692018" quat="0.70710681 -0.70710675 0 0" />
+        <site name="button-menu-down" group="3" pos="-0.11360512 -0.00302507 -0.071" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-menu-enter" group="3" pos="-0.101911 0.00626801 -0.071" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-menu-left" group="3" pos="-0.101911 0.00626801 -0.08624256" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-menu-right" group="3" pos="-0.101911 0.006268 -0.05631481" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-menu-up" group="3" pos="-0.08967406 0.01553446 -0.071" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-prog-1" group="3" pos="-0.083912 0.020341 -0.03852143" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-prog-2" group="3" pos="-0.083912 0.020341 -0.01569296" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-prog-3" group="3" pos="-0.083912 0.020341 0.00645498" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-prog-4" group="3" pos="-0.083912 0.020341 0.02790428" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-prog-5" group="3" pos="-0.08427557 0.020341 0.05022066" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-short" group="3" pos="-0.10231422 0.00569353 0.06800514" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-speed-down" group="3" pos="-0.13524599 -0.019868 0.03635469" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-speed-up" group="3" pos="-0.12379485 -0.01120483 0.03635469" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-start-stop" group="3" pos="-0.12949049 -0.01576343 0.06758012" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-temp-down" group="3" pos="-0.13524599 -0.019868 0.00569977" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-temp-up" group="3" pos="-0.12379485 -0.01120483 0.00569977" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-time-down" group="3" pos="-0.13524599 -0.019868 -0.025083" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="button-time-up" group="3" pos="-0.12379485 -0.01120483 -0.025083" quat="0.23025696 -0.23025694 0.66856695 -0.6685669" size="0.004 0.004 0.004" />
+        <site name="thermoblock-function" group="3" pos="-0.0061 0.0665 0.03830001" quat="0.70710681 -0.70710675 0 0" size="0.01 0.01 0.01" user="2 4 0.018144128 6 0.0176925056 0.009904" />
+
+        <geom name="body-display" class="visual" type="mesh" mesh="body-display-visual" pos="-0.102221 0.006093 0.005843" quat="0.635543 -0.309975 -0.635543 -0.309975" material="body-display" />
+      </body>
+    </frame>
+  </worldbody>
+  <sensor>
+    <touch name="button-menu-down" site="button-menu-down" />
+    <touch name="button-menu-enter" site="button-menu-enter" />
+    <touch name="button-menu-left" site="button-menu-left" />
+    <touch name="button-menu-right" site="button-menu-right" />
+    <touch name="button-menu-up" site="button-menu-up" />
+    <touch name="button-prog-1" site="button-prog-1" />
+    <touch name="button-prog-2" site="button-prog-2" />
+    <touch name="button-prog-3" site="button-prog-3" />
+    <touch name="button-prog-4" site="button-prog-4" />
+    <touch name="button-prog-5" site="button-prog-5" />
+    <touch name="button-short" site="button-short" />
+    <touch name="button-speed-down" site="button-speed-down" />
+    <touch name="button-speed-up" site="button-speed-up" />
+    <touch name="button-start-stop" site="button-start-stop" />
+    <touch name="button-temp-down" site="button-temp-down" />
+    <touch name="button-temp-up" site="button-temp-up" />
+    <touch name="button-time-down" site="button-time-down" />
+    <touch name="button-time-up" site="button-time-up" />
+  </sensor>
+</mujoco>

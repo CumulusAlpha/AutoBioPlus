@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="heating_plate">
+  <compiler angle="radian" assetdir="../../meshes" inertiagrouprange="3 3" />
+  <option timestep="0.002" gravity="0 0 -9.81" />
+  <asset>
+    <texture name="material_023_texture" type="2d" file="instrument/heatingplate/material_023.png" />
+    <material name="material_023" rgba="1 1 1 1" specular="0.25" shininess="0.3" texture="material_023_texture" />
+    <material name="material_024" rgba="0.0784314 0.0784314 0.0784314 1" specular="0.25" shininess="0.3" />
+    <material name="material_025" rgba="0.631373 0.631373 0.631373 1" specular="0.25" shininess="0.3" />
+    <material name="material_026" rgba="0.901961 0.901961 0.901961 1" specular="0.25" shininess="0.3" />
+    <material name="material_027" rgba="0.231373 0.239216 0.25098 1" specular="0.25" shininess="0.3" />
+    <material name="material_028" rgba="0.403922 0.403922 0.443137 1" specular="0.25" shininess="0.3" />
+    <material name="material_029" rgba="0.443137 0.443137 0.443137 1" specular="0.25" shininess="0.3" />
+    <mesh name="visual_0_0" file="instrument/heatingplate/visual_0_0.obj" />
+    <mesh name="visual_0_1" file="instrument/heatingplate/visual_0_1.obj" />
+    <mesh name="visual_0_2" file="instrument/heatingplate/visual_0_2.obj" />
+    <mesh name="visual_1_0" file="instrument/heatingplate/visual_1_0.obj" />
+    <mesh name="visual_2_0" file="instrument/heatingplate/visual_2_0.obj" />
+    <mesh name="visual_3_0" file="instrument/heatingplate/visual_3_0.obj" />
+    <mesh name="visual_3_1" file="instrument/heatingplate/visual_3_1.obj" />
+    <mesh name="visual_4_0" file="instrument/heatingplate/visual_4_0.obj" />
+    <mesh name="thermo_knob_heatplate_scale_visual" file="instrument/heatingplate/thermo_knob_heatplate_scale_visual.obj" />
+    <mesh name="collision_0" file="instrument/heatingplate/collision_0.obj" />
+    <mesh name="collision_1" file="instrument/heatingplate/collision_1.obj" />
+    <mesh name="collision_2" file="instrument/heatingplate/collision_2.obj" />
+    <mesh name="collision_3" file="instrument/heatingplate/collision_3.obj" />
+    <mesh name="collision_4" file="instrument/heatingplate/collision_4.obj" />
+    <mesh name="thermo_knob_heatplate_scale_collision" file="instrument/heatingplate/thermo_knob_heatplate_scale_collision.obj" />
+  </asset>
+  <worldbody>
+    <body name="heating_plate">
+      <geom name="visual_0_0" type="mesh" mesh="visual_0_0" material="material_023" group="2" contype="0" conaffinity="0" />
+      <geom name="visual_0_1" type="mesh" mesh="visual_0_1" material="material_024" group="2" contype="0" conaffinity="0" />
+      <geom name="visual_0_2" type="mesh" mesh="visual_0_2" material="material_025" group="2" contype="0" conaffinity="0" />
+      <geom name="visual_1_0" type="mesh" mesh="visual_1_0" material="material_026" group="2" contype="0" conaffinity="0" />
+      <geom name="visual_2_0" type="mesh" mesh="visual_2_0" material="material_027" group="2" contype="0" conaffinity="0" />
+      <geom name="collision_0" type="mesh" mesh="collision_0" group="3" rgba="0 0 0 0" />
+      <geom name="collision_1" type="mesh" mesh="collision_1" group="3" rgba="0 0 0 0" />
+      <geom name="collision_2" type="mesh" mesh="collision_2" group="3" rgba="0 0 0 0" />
+      <body name="knob" pos="0.0978376541 0.058750309 0.0708621553">
+        <joint name="knob_joint" type="hinge" axis="0.52573541 -2.29806267e-08 0.850648152" limited="true" range="0 1.57" damping="0.05" />
+        <geom name="thermo_knob_visual" type="mesh" mesh="thermo_knob_heatplate_scale_visual" material="material_028" pos="-0.0978376541 -0.058750309 -0.0708621553" group="2" contype="0" conaffinity="0" />
+        <geom name="thermo_knob_collision" type="mesh" mesh="thermo_knob_heatplate_scale_collision" pos="-0.0978376541 -0.058750309 -0.0708621553" group="3" rgba="0 0 0 0" solref="0.006 1" solimp="0.8 0.95 0.001" priority="1" />
+      </body>
+    </body>
+  </worldbody>
+  <contact>
+    <exclude body1="heating_plate" body2="knob" />
+  </contact>
+</mujoco>

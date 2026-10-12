@@ -1,0 +1,21 @@
+OpenPI pi0.5 for DexBioLab
+
+This repository is derived from OpenPI, originally released under the
+Apache License, Version 2.0.
+
+DexBioLab-specific modifications include:
+
+- DexBioLab LeRobot data configs.
+- DexBioLab rendered-zarr to LeRobot conversion tooling.
+- Three-camera policy input/output adapters for local LeRobot datasets.
+- pi0.5 action-dimension conversion utilities for DexBioLab action layouts.
+- Training, normalization, and tmux launch scripts for DexBioLab configs.
+- Documentation and installation workflow for standalone DexBioLab pi0.5
+  training and serving.
+
+Generated normalization assets, checkpoints, datasets, logs, and training
+outputs are intentionally not included.
+
+Gemma-based model components and checkpoints are subject to the Gemma Terms of
+Use. See LICENSE_GEMMA.txt. Users are responsible for obtaining and using
+checkpoints under the applicable model license terms.

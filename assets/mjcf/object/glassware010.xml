@@ -1,0 +1,32 @@
+<mujoco model="glassware010">
+  <compiler angle="radian" meshdir="../../meshes" autolimits="true"/>
+
+  <asset>
+    <mesh name="glassware010" file="container/glassware010/glassware010.obj"/>
+    <material name="clear_glass" rgba="0.85 0.95 1 0.28"/>
+  </asset>
+
+  <worldbody>
+    <body name="glassware010" pos="0 0 0">
+      <geom name="glassware010_visual" type="mesh" mesh="glassware010"
+            material="clear_glass" contype="0" conaffinity="0" group="2" density="0"/>
+      <geom name="glassware010_wall_00" size="0.0016 0.0069 0.0455" pos="0.03230000 0.00181470 0.0491" quat="1 0 0 0" type="box" group="3"/>
+      <geom name="glassware010_wall_01" size="0.0016 0.0069 0.0455" pos="0.02966623 0.01505555 0.0491" quat="0.980785 0 0 0.19509" type="box" group="3"/>
+      <geom name="glassware010_wall_02" size="0.0016 0.0069 0.0455" pos="0.02216589 0.02628059 0.0491" quat="0.92388 0 0 0.382683" type="box" group="3"/>
+      <geom name="glassware010_wall_03" size="0.0016 0.0069 0.0455" pos="0.01094085 0.03378093 0.0491" quat="0.83147 0 0 0.55557" type="box" group="3"/>
+      <geom name="glassware010_wall_04" size="0.0016 0.0069 0.0455" pos="-0.00230000 0.03641470 0.0491" quat="0.707107 0 0 0.707107" type="box" group="3"/>
+      <geom name="glassware010_wall_05" size="0.0016 0.0069 0.0455" pos="-0.01554085 0.03378093 0.0491" quat="0.55557 0 0 0.83147" type="box" group="3"/>
+      <geom name="glassware010_wall_06" size="0.0016 0.0069 0.0455" pos="-0.02676589 0.02628059 0.0491" quat="0.382683 0 0 0.92388" type="box" group="3"/>
+      <geom name="glassware010_wall_07" size="0.0016 0.0069 0.0455" pos="-0.03426623 0.01505555 0.0491" quat="0.19509 0 0 0.980785" type="box" group="3"/>
+      <geom name="glassware010_wall_08" size="0.0016 0.0069 0.0455" pos="-0.03690000 0.00181470 0.0491" quat="0 0 0 1" type="box" group="3"/>
+      <geom name="glassware010_wall_09" size="0.0016 0.0069 0.0455" pos="-0.03426623 -0.01142615 0.0491" quat="-0.19509 0 0 0.980785" type="box" group="3"/>
+      <geom name="glassware010_wall_10" size="0.0016 0.0069 0.0455" pos="-0.02676589 -0.02265119 0.0491" quat="-0.382683 0 0 0.92388" type="box" group="3"/>
+      <geom name="glassware010_wall_11" size="0.0016 0.0069 0.0455" pos="-0.01554085 -0.03015153 0.0491" quat="-0.55557 0 0 0.83147" type="box" group="3"/>
+      <geom name="glassware010_wall_12" size="0.0016 0.0069 0.0455" pos="-0.00230000 -0.03278530 0.0491" quat="-0.707107 0 0 0.707107" type="box" group="3"/>
+      <geom name="glassware010_wall_13" size="0.0016 0.0069 0.0455" pos="0.01094085 -0.03015153 0.0491" quat="-0.83147 0 0 0.55557" type="box" group="3"/>
+      <geom name="glassware010_wall_14" size="0.0016 0.0069 0.0455" pos="0.02216589 -0.02265119 0.0491" quat="-0.92388 0 0 0.382683" type="box" group="3"/>
+      <geom name="glassware010_wall_15" size="0.0016 0.0069 0.0455" pos="0.02966623 -0.01142615 0.0491" quat="-0.980785 0 0 0.19509" type="box" group="3"/>
+      <geom name="glassware010_bottom" size="0.0335 0.0018" pos="-0.00230000 0.00181470 0.0018" type="cylinder" group="3"/>
+    </body>
+  </worldbody>
+</mujoco>

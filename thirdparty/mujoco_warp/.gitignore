@@ -1,0 +1,4 @@
+*.pyc
+__pycache__/
+mujoco_warp.egg-info/
+.vscode/

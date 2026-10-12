@@ -1,0 +1,15 @@
+pretrained_model_path: "./checkpoints/pi05_base/params"
+pretrained_model_action_dim_64_path: "./checkpoints/pi05_base_action_dim_64/params"
+
+dataset_root: "./datasets/dexbiolab_lerobot"
+ckpts_root: "./checkpoints/pi05_dexbiolab_ckpts"
+
+project_name: "dexbiolab-openpi"
+wandb_enabled: true
+
+batch_size: 32
+num_workers: 4
+single_arm_steps: 30000
+dual_arm_steps: 60000
+save_interval: 10000
+keep_period: null
